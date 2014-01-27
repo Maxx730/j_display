@@ -58,12 +58,12 @@
 						this.init_counter();
 						this.init_title();
 						this.init_fullscreen();
-						this.init_auto_controls();
 
 						//If the setting for auto rotate is set to true then begin a set interval to rotate through each image in the array.
 						if(this.settings.auto_rotate == true){
 							var program = this;
-
+							//Build controls for pausing auto rotate.
+							this.init_auto_controls();
 							var auto_rotate = setInterval(function(){
 								if(program.settings.auto_rotate == true){
 									program.next_image();
@@ -82,8 +82,15 @@
 					var program = this;
 
 					$("#j_display_thumbnail_hold").css({
-						float : "left",
-						paddingRight : "10px"
+						width : "100%",
+						position : "absolute",
+						zIndex : "1000",
+						paddingRight : "10px",
+						backgroundColor : "black",
+						bottom : "0px",
+						height : "50px",
+						borderTop : "solid 3px white",
+						padding : "7px"
 					});
 
 					$(".j_display_thumbnail").css({
@@ -91,11 +98,15 @@
 						height : "50px",
 						cursor : "pointer",
 						marginTop : "7px",
-						opacity : ".5"
+						opacity : ".3",
+						float : "left",
+						marginLeft : "7px",
+						marginTop : "0px",
+						backgroundColor : "white"
 					});
 
 					$(".j_display_thumbnail:first-child").css({
-						marginTop : "0px"
+						marginLeft : "0px"
 					});
 
 					$("#j_display_stage").css({
@@ -105,13 +116,16 @@
 						float : "left",
 						position : "relative",
 						overflow : "hidden",
-						backgroundRepeat : "no-repeat"
+						backgroundRepeat : "no-repeat",
+						paddingBottom : "50px"
 					});
 
 					$("#j_display_fader").css({
 						position : "absolute",
 						width : "100%",
 						height : "100%",
+						top : "0px",
+						left : "0px",
 						backgroundColor : "black",
 						display : "none",
 						backgroundRepeat : "no-repeat"
@@ -125,7 +139,7 @@
 						textAlign : "center",
 						fontFamily : "sans-serif",
 						fontSize : "12px",
-						bottom : "7px",
+						bottom : "67px",
 						left : "7px"
 					});
 
@@ -205,15 +219,16 @@
 						opacity : ".5",
 						top : "7px",
 						left : "7px",
-						backgroundPosition : "7px 7px"
+						backgroundPosition : "7px 7px",
+						cursor : "pointer"
 					});
 				},
 
 				//Builds the divs that make up the stage of the gallery.
 				build_stage: function (){
 					//Div that holds the actual thumbnails of the images.
-            		$(this.element).append("<div id = 'j_display_thumbnail_hold'></div><div id = 'j_display_stage'></div>");
-            		$("#j_display_stage").append("<div id = 'j_display_fader'></div>");
+            		$(this.element).append("<div id = 'j_display_stage'></div>");
+            		$("#j_display_stage").append("<div id = 'j_display_fader'></div><div id = 'j_display_thumbnail_hold'></div>");
 				},
 
 				//Loop through the images and build the divs that will contain the thumbnails.
@@ -240,15 +255,15 @@
 					var program = this;
 					$("#j_display_thumbnail_hold").children(".j_display_thumbnail").each(function(index){
 						$(this).click(function(){
+							program.current_image = index;
 							program.change_animate($(this).css('background-image'),program.settings.animation_type,index);
-							$(this).fadeTo("slow","1");
 						});
 					});
 
 					$(".j_display_thumbnail").hover(function(){
-						$(this).animate({opacity : "1"},"fast");
+						$(this).css({opacity : "1"});
 					},function(){
-						$(this).animate({opacity : ".5"},"fast");
+						$(this).css({opacity : ".5"});
 					});
 
 					//controls that will slide down if the user hovers over the stage.
@@ -271,6 +286,16 @@
 					//This should initialize a fullscreen image.
 					$("#j_display_fullscreen").click(function(){
 
+					});
+
+					$("#j_display_auto").hover(function(){
+						$(this).animate({
+							opacity : "1"
+						},300);
+					},function(){
+						$(this).animate({
+							opacity : ".5"
+						},300);
 					});
 
 					$("#j_display_auto").click(function(){
@@ -344,11 +369,11 @@
 					var program = this;
 					switch(type){
 						case "fade":
-							$("#j_display_fader").css({backgroundImage : obj,backgroundSize : program.scale_img(obj,"stage",cur)});
-
+							$("#j_display_fader").css({backgroundImage : obj,backgroundSize : program.scale_img(obj,"stage",cur),backgroundPosition : program.center_img()});
 							$("#j_display_fader").stop().fadeIn(program.settings.animation_speed,function(){
-								$("#j_display_stage").css({backgroundImage : obj,backgroundSize : program.scale_img(obj,"stage",cur)});
-								$("#j_display_fader").css({display : "none"});
+								$("#j_display_stage").css({backgroundImage : obj,backgroundSize : program.scale_img(obj,"stage",cur),backgroundPosition : program.center_img()});
+								$("#j_display_fader").css("display","none");
+g()
 							});	
 
 							this.update_counter(cur);
@@ -389,7 +414,7 @@
 
 					//When a image switches, indicate the switch in the thumbnails by changing the opacity of the current image the loop is on.
 					$(".j_display_thumbnail").eq(program.current_image -1).animate({
-						opacity : ".5"
+						opacity : ".3"
 					},500);
 
 					$(".j_display_thumbnail").eq(program.current_image).animate({
@@ -410,6 +435,27 @@
 
 				stage_pause: function(){
 
+				},
+
+				center_img: function(){
+					var program = this;
+
+					var temp_img = document.createElement("img");
+					temp_img.src = $(program.img_array[program.current_image]).attr("src");
+					document.getElementById("j_display_stage").appendChild(temp_img);
+
+					if(temp_img.width > temp_img.height){
+						temp_img.style.width = "100%";
+
+						var background_position = "0px "+(parseInt(program.settings.stage_height) - temp_img.height) / 2 + "px";
+					}else if(temp_img.width < temp_img.height){
+						temp_img.style.height = "100%";
+
+						var background_position = (parseInt(program.settings.stage_width) - temp_img.width) / 2 + "px 0px";
+					}
+
+					temp_img.remove();
+					return background_position;
 				}
 		};
 
