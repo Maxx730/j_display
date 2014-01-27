@@ -20,7 +20,9 @@
 				"color_theme" : "#000000",
 				"auto_rotate" : false,
 				"rotate_speed" : 5000,
-				"animation_type" : "fade"
+				"animation_type" : "fade",
+				"pause_period" : 3000
+
 			};
 
 		// The actual plugin constructor
@@ -56,6 +58,7 @@
 						this.init_counter();
 						this.init_title();
 						this.init_fullscreen();
+						this.init_auto_controls();
 
 						//If the setting for auto rotate is set to true then begin a set interval to rotate through each image in the array.
 						if(this.settings.auto_rotate == true){
@@ -222,7 +225,7 @@
 					$("#j_display_thumbnail_hold").children(".j_display_thumbnail").each(function(index){
 						$(this).click(function(){
 							program.change_animate($(this).css('background-image'),program.settings.animation_type,index);
-							$(this).fadeTo("slow",1);
+							$(this).fadeTo("slow","1");
 						});
 					});
 
@@ -232,6 +235,7 @@
 						$(this).animate({opacity : ".5"},"fast");
 					});
 
+					//controls that will slide down if the user hovers over the stage.
 					$("#j_display_stage").hover(function(){
 						$("#j_display_control_left").animate({top : "7px"},150);
 						$("#j_display_control_right").animate({top : "7px"},150);
@@ -248,6 +252,7 @@
 						$(this).animate({opacity : ".5"});
 					});
 
+					//This should initialize a fullscreen image.
 					$("#j_display_fullscreen").click(function(){
 
 					});
@@ -270,8 +275,8 @@
 					$("#j_display_stage").append("<div id = 'j_display_control_left'></div><div id = 'j_display_control_right'></div>")
 				},
 
-				focus_thumnail:function(thumbnail){
-
+				init_auto_controls: function(){
+					$("#j_display_stage").append("<div id = 'j_display_auto'>play/pause</div>");
 				},
 
 				//Determines the width and height of a background img depending on the images resolution/ratio.
