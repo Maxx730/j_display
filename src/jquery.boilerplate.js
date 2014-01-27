@@ -19,7 +19,8 @@
 				"animation_speed" : 500,
 				"color_theme" : "#000000",
 				"auto_rotate" : false,
-				"rotate_speed" : 5000
+				"rotate_speed" : 5000,
+				"animation_type" : "fade"
 			};
 
 		// The actual plugin constructor
@@ -138,7 +139,7 @@
 						position : "absolute",
 						width : "30px",
 						height : "30px",
-						backgroundColor : "black",
+						backgroundImage : "url(../img/arrow_left.png)",
 						opacity : ".5",
 						zIndex : "999",
 						top : "-35px",
@@ -216,7 +217,7 @@
 					var program = this;
 					$("#j_display_thumbnail_hold").children(".j_display_thumbnail").each(function(index){
 						$(this).click(function(){
-							program.change_animate($(this).css('background-image'),"fade",index);
+							program.change_animate($(this).css('background-image'),program.settings.animation_type,index);
 							$(this).fadeTo("slow",1);
 						});
 					});
@@ -339,7 +340,7 @@
 				},
 
 				next_image: function(){
-					this.change_animate("url("+$(this.img_array[this.current_image]).attr("src")+")","fade",this.current_image);
+					this.change_animate("url("+$(this.img_array[this.current_image]).attr("src")+")",this.settings.animation_type,this.current_image);
 
 					if(this.current_image >= (this.img_array.length -1)){
 						this.current_image = 0;
