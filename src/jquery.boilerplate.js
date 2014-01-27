@@ -37,7 +37,7 @@
 				this._name = pluginName;
 				//Array that holds img elements for later manipulation.
 				this.img_array = Array();
-				this.current_image = 0;
+				this.current_image = 1;
 
 				this.title_array = Array();
 				this.init();
@@ -80,10 +80,12 @@
 				//Handles styling for all the ui in the gallery.
 				init_styling: function(){
 					var program = this;
+					//Calculate how wide the thumbnail holder needs to be roughly, can be done more precisely later on.
+					var thumbnail_hold = this.img_array.length * 60 + "px";
 
 					$("#j_display_thumbnail_hold").css({
-						width : "100%",
 						position : "absolute",
+						width : thumbnail_hold,
 						zIndex : "1000",
 						paddingRight : "10px",
 						backgroundColor : "black",
@@ -334,6 +336,7 @@
 				init_auto_controls: function(){
 					$("#j_display_stage").append("<div id = 'j_display_auto'></div>");
 				},
+				//End of UI control initialization functions.
 
 				//Determines the width and height of a background img depending on the images resolution/ratio.
 				scale_img: function(img,type,cur){
@@ -373,7 +376,6 @@
 							$("#j_display_fader").stop().fadeIn(program.settings.animation_speed,function(){
 								$("#j_display_stage").css({backgroundImage : obj,backgroundSize : program.scale_img(obj,"stage",cur),backgroundPosition : program.center_img()});
 								$("#j_display_fader").css("display","none");
-g()
 							});	
 
 							this.update_counter(cur);
@@ -422,11 +424,13 @@ g()
 					},500);
 					//End of switching animation.
 
-					if(this.current_image >= (this.img_array.length -1)){
-						this.current_image = 0;
-					}else{
-						this.current_image++;
-					}
+					setTimeout(function(){
+						if(program.current_image >= (program.img_array.length -1)){
+							program.current_image = 0;
+						}else{
+							program.current_image++;
+						}
+					},1000);
 				},
 
 				previous_image: function(){
@@ -437,6 +441,7 @@ g()
 
 				},
 
+				//Takes the currently focused img, creates a temporary img element to determine the size of each dimension of the background image and then centers the background image by returning the css string needed to center it.
 				center_img: function(){
 					var program = this;
 
