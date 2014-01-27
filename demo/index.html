@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>jQuery Boilerplate</title>
+		<script src="http://ajax.googleapis.com/ajax/libs/jquery/2.0.0/jquery.min.js"></script>
+		<script src="../src/jquery.boilerplate.js"></script>
+	</head>
+	<body>
+		<div id = "j_display_gallery">
+			<img src = "http://www.dlanham.com/art/mellomarsh/preview.jpg" title = "Credit : David Lanham"/>
+			<img src = "http://www.dlanham.com/art/chrysalis/preview.jpg" title = "Credit : David Lanham"/>
+			<img src = "http://www.dlanham.com/art/scout/preview.jpg" title = "Credit : David Lanham"/>
+			<img src = "http://www.dlanham.com/art/itamae/preview.jpg" title = "Credit : David Lanham"/>
+			<img src = "http://www.dlanham.com/art/watcher/preview.jpg" title = "Credit : David Lanham"/>
+			<img src = "http://www.dlanham.com/art/phobos/preview.jpg" title = "Credit : David Lanham"/>	
+			<img src = "http://www.dlanham.com/art/fullmoon/preview.jpg" title = "Credit : David Lanham"/>				
+			<script>
+
+			$(document).ready(function(){
+				$("#j_display_gallery").j_display({
+					"stage_width" : "800px",
+					"stage_height" : "500px",
+					"auto_rotate" : false
+				});
+			});
+
+			</script>
+	</body>
+</html>
