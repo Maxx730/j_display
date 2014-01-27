@@ -65,7 +65,9 @@
 							var program = this;
 
 							var auto_rotate = setInterval(function(){
-								program.next_image();
+								if(program.settings.auto_rotate == true){
+									program.next_image();
+								}
 							},program.settings.rotate_speed);
 						}else{
 							this.init_controls();
@@ -191,6 +193,20 @@
 						marginTop : "7px",
 						opacity : "1"
 					});
+
+					$("#j_display_auto").css({
+						position : "absolute",
+						backgroundColor : "black",
+						backgroundImage : "url(../img/pause.png)",
+						zIndex : "999",
+						width : "30px",
+						height : "30px",
+						backgroundRepeat : "no-repeat",
+						opacity : ".5",
+						top : "7px",
+						left : "7px",
+						backgroundPosition : "7px 7px"
+					});
 				},
 
 				//Builds the divs that make up the stage of the gallery.
@@ -256,6 +272,21 @@
 					$("#j_display_fullscreen").click(function(){
 
 					});
+
+					$("#j_display_auto").click(function(){
+
+						if(program.settings.auto_rotate == true){
+							program.settings.auto_rotate = false;
+							$(this).css({
+								backgroundImage : "url(../img/play.png)"
+							});
+						}else{
+							program.settings.auto_rotate = true;
+							$(this).css({
+								backgroundImage : "url(../img/pause.png)"
+							});
+						}
+					});
 				},
 
 				//Three funcitons below create ui divs for different controls on the gallery such as fullscreen, next/forward and counting.
@@ -276,7 +307,7 @@
 				},
 
 				init_auto_controls: function(){
-					$("#j_display_stage").append("<div id = 'j_display_auto'>play/pause</div>");
+					$("#j_display_stage").append("<div id = 'j_display_auto'></div>");
 				},
 
 				//Determines the width and height of a background img depending on the images resolution/ratio.
@@ -374,6 +405,10 @@
 				},
 
 				previous_image: function(){
+
+				},
+
+				stage_pause: function(){
 
 				}
 		};
