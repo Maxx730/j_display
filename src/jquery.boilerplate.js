@@ -247,6 +247,10 @@
 					},function(){
 						$(this).animate({opacity : ".5"});
 					});
+
+					$("#j_display_fullscreen").click(function(){
+
+					});
 				},
 
 				//Three funcitons below create ui divs for different controls on the gallery such as fullscreen, next/forward and counting.
@@ -344,7 +348,18 @@
 				},
 
 				next_image: function(){
+					var program = this;
 					this.change_animate("url("+$(this.img_array[this.current_image]).attr("src")+")",this.settings.animation_type,this.current_image);
+
+					//When a image switches, indicate the switch in the thumbnails by changing the opacity of the current image the loop is on.
+					$(".j_display_thumbnail").eq(program.current_image -1).animate({
+						opacity : ".5"
+					},500);
+
+					$(".j_display_thumbnail").eq(program.current_image).animate({
+						opacity : "1"
+					},500);
+					//End of switching animation.
 
 					if(this.current_image >= (this.img_array.length -1)){
 						this.current_image = 0;
