@@ -140,7 +140,7 @@
 					});
 
 					$("#j_display_counter").css({
-						backgroundColor : "white",
+						backgroundColor : program.settings.color_theme,
 						padding : "7px",
 						position : "absolute",
 						zIndex : "999",
@@ -232,14 +232,15 @@
 					});
 
 					$("#j_display_big_screen").css({
-						backgroundColor : "red",
+						backgroundColor : "black",
 						position : "fixed",
 						width : "100%",
 						height : "100%",
 						top : "0px",
 						left : "0px",
 						zIndex : "1100",
-						display : "none"
+						display : "none",
+						backgroundRepeat : "no-repeat"
 					});
 				},
 
@@ -308,7 +309,7 @@
 
 					//This should initialize a fullscreen image.
 					$("#j_display_fullscreen").click(function(){
-
+						program.set_fullscreen_image();
 					});
 
 					$("#j_display_auto").hover(function(){
@@ -349,6 +350,7 @@
 				init_fullscreen: function(){
 					$("#j_display_stage").append("<div id = 'j_display_fullscreen'>Fullscreen</div>");
 					$(this.element).append("<div id = 'j_display_big_screen'></div>");
+					$("#j_display_big_screen").append("<div id = 'j_display_exit_full'></div>");
 				},
 
 				init_controls: function(){
@@ -394,9 +396,9 @@
 					var program = this;
 					switch(type){
 						case "fade":
-							$("#j_display_fader").css({backgroundImage : obj,backgroundSize : program.scale_img(obj,"stage",cur),backgroundPosition : program.center_img()});
+							$("#j_display_fader").css({backgroundImage : obj,backgroundSize : program.scale_img(obj,"stage",cur),backgroundPosition : program.center_img("stage")});
 							$("#j_display_fader").stop().fadeIn(program.settings.animation_speed,function(){
-								$("#j_display_stage").css({backgroundImage : obj,backgroundSize : program.scale_img(obj,"stage",cur),backgroundPosition : program.center_img()});
+								$("#j_display_stage").css({backgroundImage : obj,backgroundSize : program.scale_img(obj,"stage",cur),backgroundPosition : program.center_img("stage")});
 								$("#j_display_fader").css("display","none");
 							});	
 
@@ -466,13 +468,26 @@
 				},
 
 				//Takes the currently focused img, creates a temporary img element to determine the size of each dimension of the background image and then centers the background image by returning the css string needed to center it.
-				center_img: function(){
+					//context String (required) differentiates between the normal stage and the fullscreen.
+				center_img: function(context){
 					var program = this;
 
+					//Temporary image is always going to be needed to determine where a background img should be placed.
 					var temp_img = document.createElement("img");
 					temp_img.src = $(program.img_array[program.current_image]).attr("src");
-					document.getElementById("j_display_stage").appendChild(temp_img);
 
+					//Determine where to put the temporary image based on the context.
+					switch(context){
+						case "stage":
+							document.getElementById("j_display_stage").appendChild(temp_img);
+						break
+
+						case "fullscreen":
+							document.getElementById("j_display_big_screen").appendChild(temp_img);
+						break;
+					}
+
+					//The rest of the function runs as usual we only need to 
 					if(temp_img.width > temp_img.height){
 						temp_img.style.width = "100%";
 
@@ -505,6 +520,17 @@
 							},200);						
 						break;
 					}
+				},
+
+				//When fullscreen is click, this function grabs the current image variable and sets the big screen background image to that of the current image.
+				set_fullscreen_image: function(){
+					var background_url = $(this.img_array[this.current_image]).attr("src");
+
+					$("#j_display_big_screen").css({
+						backgroundImage : "url("+background_url+")"
+					});
+
+					$("#j_display_big_screen").fadeIn("slow");
 				}
 		};
 
