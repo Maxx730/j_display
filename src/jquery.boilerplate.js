@@ -242,6 +242,20 @@
 						display : "none",
 						backgroundRepeat : "no-repeat"
 					});
+
+					$("#j_display_exit_full").css({
+						backgroundImage : "url(../img/close_fullscreen.png)",
+						width : "42px",
+						height : "42px",
+						position : "absolute",
+						zIndex : "1600",
+						opacity : ".3",
+						backgroundColor : "black",
+						cursor : "pointer",
+						display : "none",
+						backgroundRepeat : "no-repeat",
+						backgroundPosition : "5px 5px"
+					});
 				},
 
 				//Builds the divs that make up the stage of the gallery.
@@ -312,6 +326,16 @@
 						program.set_fullscreen_image();
 					});
 
+					$("#j_display_control_right").click(function(){
+						program.next_image();
+					});
+
+					$("#j_display_exit_full").click(function(){
+						$(this).fadeOut("fast",function(){
+							$("#j_display_big_screen").fadeOut("fast");
+						});
+					});
+
 					$("#j_display_auto").hover(function(){
 						$(this).animate({
 							opacity : "1"
@@ -379,6 +403,19 @@
 						break;
 						case "stage":
 							var img = this.img_array[cur];
+							if($(img).width() > $(img).height()){
+								var b_size = "100% auto";
+							}else if($(img).width() < $(img).height()){
+								var b_size = "auto 100%";
+							}else{
+								var b_size = "100% 100%";
+							}
+
+							return b_size;
+						break;
+						case "fullscreen":
+							var img = this.img_array[this.current_image];
+
 							if($(img).width() > $(img).height()){
 								var b_size = "100% auto";
 							}else if($(img).width() < $(img).height()){
@@ -524,13 +561,18 @@
 
 				//When fullscreen is click, this function grabs the current image variable and sets the big screen background image to that of the current image.
 				set_fullscreen_image: function(){
+					var program = this;
 					var background_url = $(this.img_array[this.current_image]).attr("src");
 
 					$("#j_display_big_screen").css({
-						backgroundImage : "url("+background_url+")"
+						backgroundImage : "url("+background_url+")",
+						backgroundSize : program.scale_img($(program.img_array[program.current_image]),"fullscreen",program.current_image),
+						backgroundPosition : program.center_img("fullscreen")
 					});
 
-					$("#j_display_big_screen").fadeIn("slow");
+					$("#j_display_big_screen").fadeIn("slow",function(){
+						$("#j_display_exit_full").fadeIn("fast");
+					});
 				}
 		};
 
