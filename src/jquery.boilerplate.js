@@ -254,7 +254,31 @@
 						cursor : "pointer",
 						display : "none",
 						backgroundRepeat : "no-repeat",
-						backgroundPosition : "5px 5px"
+						backgroundPosition : "5px 5px",
+						left : "7px",
+						top : "7px"
+					});
+
+					$("#j_display_thumb_left").css({
+						position : "absolute",
+						left : "0px",
+						top : "0px",
+						backgroundColor : program.settings.color_theme,
+						height : "100%",
+						width : "30px",
+						opacity : ".5",
+						cursor : "pointer"
+					});
+
+					$("#j_display_thumb_right").css({
+						position : "absolute",
+						right : "0px",
+						top : "0px",
+						backgroundColor : program.settings.color_theme,
+						height : "100%",
+						width : "30px",
+						opacity : ".5",
+						cursor : "pointer"
 					});
 				},
 
@@ -293,6 +317,7 @@
 						$("#j_display_thumbnail_slider").children(".j_display_thumbnail").each(function(index){
 							$(this).click(function(){
 								program.current_image = index;
+								program.scroll_to_thumb();
 								program.change_animate($(this).css('background-image'),program.settings.animation_type,index);
 							});
 						});
@@ -334,6 +359,12 @@
 						$(this).fadeOut("fast",function(){
 							$("#j_display_big_screen").fadeOut("fast");
 						});
+					});
+
+					$("#j_display_exit_full").hover(function(){
+						$(this).animate({opacity : "1"},300);
+					},function(){
+						$(this).animate({opacity : ".5"},300);
 					});
 
 					$("#j_display_auto").hover(function(){
@@ -379,6 +410,9 @@
 
 				init_controls: function(){
 					$("#j_display_stage").append("<div id = 'j_display_control_left'></div><div id = 'j_display_control_right'></div>")
+
+					//create the left and right ui controls for going through the thumbnails below.
+					$("#j_display_thumbnail_hold").append("<div id = 'j_display_thumb_left'></div><div id = 'j_display_thumb_right'></div>");
 				},
 
 				init_auto_controls: function(){
@@ -473,6 +507,17 @@
 
 				next_image: function(){
 					var program = this;
+
+					setTimeout(function(){
+						if(program.current_image >= (program.img_array.length -1)){
+							program.slide_thumbs("reset");
+							program.current_image = 0;
+						}else{
+							program.slide_thumbs("left");
+							program.current_image++;
+						}
+					},1000);
+
 					this.change_animate("url("+$(this.img_array[this.current_image]).attr("src")+")",this.settings.animation_type,this.current_image);
 
 					//When a image switches, indicate the switch in the thumbnails by changing the opacity of the current image the loop is on.
@@ -484,16 +529,6 @@
 						opacity : "1"
 					},500);
 					//End of switching animation.
-
-					setTimeout(function(){
-						if(program.current_image >= (program.img_array.length -1)){
-							program.slide_thumbs("reset");
-							program.current_image = 0;
-						}else{
-							program.slide_thumbs("left");
-							program.current_image++;
-						}
-					},1000);
 				},
 
 				previous_image: function(){
@@ -557,6 +592,18 @@
 							},200);						
 						break;
 					}
+				},
+
+				scroll_to_thumb: function(){
+					var program = this;
+
+					var current_thumb = $(".j_display_thumbnail").eq(program.current_image);
+
+					var pos_left = (program.current_image * 57) - 7 + "px";
+
+					$("#j_display_thumbnail_slider").animate({
+						left : "-" + pos_left
+					},300);
 				},
 
 				//When fullscreen is click, this function grabs the current image variable and sets the big screen background image to that of the current image.
