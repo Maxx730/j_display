@@ -91,7 +91,7 @@
 						backgroundColor : "black",
 						bottom : "0px",
 						height : "50px",
-						borderTop : "solid 3px white",
+						borderTop : "solid 3px " + program.settings.color_theme,
 						padding : "7px"
 					});
 
@@ -110,6 +110,12 @@
 					$(".j_display_thumbnail:first-child").css({
 						marginLeft : "0px"
 					});
+
+					$("#j_display_thumbnail_slider").css({
+						position : "absolute",
+						width : "100%",
+						height : "100%"
+					})
 
 					$("#j_display_stage").css({
 						width : this.settings.stage_width,
@@ -224,13 +230,24 @@
 						backgroundPosition : "7px 7px",
 						cursor : "pointer"
 					});
+
+					$("#j_display_big_screen").css({
+						backgroundColor : "red",
+						position : "fixed",
+						width : "100%",
+						height : "100%",
+						top : "0px",
+						left : "0px",
+						zIndex : "1100",
+						display : "none"
+					});
 				},
 
 				//Builds the divs that make up the stage of the gallery.
 				build_stage: function (){
 					//Div that holds the actual thumbnails of the images.
             		$(this.element).append("<div id = 'j_display_stage'></div>");
-            		$("#j_display_stage").append("<div id = 'j_display_fader'></div><div id = 'j_display_thumbnail_hold'></div>");
+            		$("#j_display_stage").append("<div id = 'j_display_fader'></div><div id = 'j_display_thumbnail_hold'><div id = 'j_display_thumbnail_slider'></div></div>");
 				},
 
 				//Loop through the images and build the divs that will contain the thumbnails.
@@ -246,7 +263,7 @@
 							display : "none"
 						});
 
-						$("#j_display_thumbnail_hold").append("<div class = 'j_display_thumbnail' style = 'background-image:url("+$(this).attr("src")+");background-size:"+program.scale_img($(this),"thumbnail")+";'></div>");
+						$("#j_display_thumbnail_slider").append("<div class = 'j_display_thumbnail' style = 'background-image:url("+$(this).attr("src")+");background-size:"+program.scale_img($(this),"thumbnail")+";'></div>");
 					});
 
 					$("#j_display_stage").css({backgroundImage : "url("+$(program.img_array[0]).attr("src")+")",backgroundSize : program.scale_img($(this),"stage",0)});
@@ -255,12 +272,16 @@
 				//Create all the event functions for different parts of the gallery ui.
 				init_events: function(){
 					var program = this;
-					$("#j_display_thumbnail_hold").children(".j_display_thumbnail").each(function(index){
-						$(this).click(function(){
-							program.current_image = index;
-							program.change_animate($(this).css('background-image'),program.settings.animation_type,index);
+
+					//Changing the background image, as of now, can only be done while auto rotate is set to false.
+					if(program.settings.auto_rotate == false){
+						$("#j_display_thumbnail_slider").children(".j_display_thumbnail").each(function(index){
+							$(this).click(function(){
+								program.current_image = index;
+								program.change_animate($(this).css('background-image'),program.settings.animation_type,index);
+							});
 						});
-					});
+					}
 
 					$(".j_display_thumbnail").hover(function(){
 						$(this).css({opacity : "1"});
@@ -327,6 +348,7 @@
 
 				init_fullscreen: function(){
 					$("#j_display_stage").append("<div id = 'j_display_fullscreen'>Fullscreen</div>");
+					$(this.element).append("<div id = 'j_display_big_screen'></div>");
 				},
 
 				init_controls: function(){
@@ -426,8 +448,10 @@
 
 					setTimeout(function(){
 						if(program.current_image >= (program.img_array.length -1)){
+							program.slide_thumbs("reset");
 							program.current_image = 0;
 						}else{
+							program.slide_thumbs("left");
 							program.current_image++;
 						}
 					},1000);
@@ -461,6 +485,26 @@
 
 					temp_img.remove();
 					return background_position;
+				},
+
+				//When auto is on then we need to keep track of which photo is actually focused on, if auto is not on than there will be sliding arrows for the user to find photos.
+				slide_thumbs: function(direction){
+					switch(direction){
+						case "left":
+							$("#j_display_thumbnail_slider").animate({
+								left : "-=57px"
+							},200);
+						break;
+
+						case "right":
+						break;
+
+						case "reset":
+							$("#j_display_thumbnail_slider").animate({
+								left : "7px"
+							},200);						
+						break;
+					}
 				}
 		};
 
