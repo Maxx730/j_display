@@ -262,23 +262,31 @@
 					$("#j_display_thumb_left").css({
 						position : "absolute",
 						left : "0px",
-						top : "0px",
+						bottom : "0px",
 						backgroundColor : program.settings.color_theme,
-						height : "100%",
+						backgroundImage : "url(../img/thumb_left.png)",
+						backgroundRepeat : "no-repeat",
+						backgroundPosition : "2px 16px",
+						height : "64px",
 						width : "30px",
 						opacity : ".5",
-						cursor : "pointer"
+						cursor : "pointer",
+						zIndex : "1700"
 					});
 
 					$("#j_display_thumb_right").css({
 						position : "absolute",
 						right : "0px",
-						top : "0px",
+						bottom : "0px",
 						backgroundColor : program.settings.color_theme,
-						height : "100%",
+						backgroundImage : "url(../img/thumb_right.png)",
+						backgroundRepeat : "no-repeat",
+						backgroundPosition : "-2px 16px",
+						height : "64px",
 						width : "30px",
 						opacity : ".5",
-						cursor : "pointer"
+						cursor : "pointer",
+						zIndex : "1700"
 					});
 				},
 
@@ -412,7 +420,7 @@
 					$("#j_display_stage").append("<div id = 'j_display_control_left'></div><div id = 'j_display_control_right'></div>")
 
 					//create the left and right ui controls for going through the thumbnails below.
-					$("#j_display_thumbnail_hold").append("<div id = 'j_display_thumb_left'></div><div id = 'j_display_thumb_right'></div>");
+					$("#j_display_stage").append("<div id = 'j_display_thumb_left'></div><div id = 'j_display_thumb_right'></div>");
 				},
 
 				init_auto_controls: function(){
