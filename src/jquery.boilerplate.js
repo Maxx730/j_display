@@ -271,7 +271,7 @@
 						width : "30px",
 						opacity : ".5",
 						cursor : "pointer",
-						zIndex : "1700"
+						zIndex : "1400"
 					});
 
 					$("#j_display_thumb_right").css({
@@ -286,7 +286,7 @@
 						width : "30px",
 						opacity : ".5",
 						cursor : "pointer",
-						zIndex : "1700"
+						zIndex : "1400"
 					});
 				},
 
@@ -399,6 +399,30 @@
 							});
 						}
 					});
+
+					$(".thumb_control").hover(function(){
+						$(this).css({
+							opacity : ".8"
+						});
+					},function(){
+						$(this).css({
+							opacity : ".5"
+						});
+					});
+
+					$("#j_display_thumb_left").hover(function(){
+						program.large_thumb_scroll("left");
+					},function(){
+						alert("working");
+					});
+
+					$("#j_display_thumb_right").hover(function(){
+							moving = setInterval(function(){
+							program.large_thumb_scroll("right");
+						},100);
+					},function(){
+						clearInterval(moving);
+					});
 				},
 
 				//Three funcitons below create ui divs for different controls on the gallery such as fullscreen, next/forward and counting.
@@ -420,7 +444,7 @@
 					$("#j_display_stage").append("<div id = 'j_display_control_left'></div><div id = 'j_display_control_right'></div>")
 
 					//create the left and right ui controls for going through the thumbnails below.
-					$("#j_display_stage").append("<div id = 'j_display_thumb_left'></div><div id = 'j_display_thumb_right'></div>");
+					$("#j_display_stage").append("<div id = 'j_display_thumb_left' class = 'thumb_control'></div><div id = 'j_display_thumb_right' class = 'thumb_control'></div>");
 				},
 
 				init_auto_controls: function(){
@@ -602,6 +626,7 @@
 					}
 				},
 
+				//When a thumbnail is click on, the thumbnail slider will scroll to the calculated position.
 				scroll_to_thumb: function(){
 					var program = this;
 
@@ -612,6 +637,41 @@
 					$("#j_display_thumbnail_slider").animate({
 						left : "-" + pos_left
 					},300);
+				},
+
+				large_thumb_scroll: function(direction){
+					switch(direction){
+						case "left":
+							var pos_left = $("#j_display_thumbnail_slider").css("left");
+							
+							//If the slider is already at the beginning of the thumbnails animate a stopping type animation to indicate the beginning has been reached.
+							if(0 < parseInt(pos_left) && parseInt(pos_left) <= 7){
+								$("#j_display_thumbnail_slider").animate({left : "0px"},100,function(){
+									$("#j_display_thumbnail_slider").animate({left : "7px"},400);	
+								});
+							}else{
+
+								var slide_left = parseInt($("#j_display_thumbnail_slider").css("left"));
+								var distance = $("#j_display_thumbnail_hold").width();
+
+								//Check if the sliding left will go past the first thumbnail or not, if it does automatically stop at 0
+								if((slide_left - distance) < 0){
+									$("#j_display_thumbnail_slider").animate({left : "0px"},100,function(){
+										$("#j_display_thumbnail_slider").animate({left : "7px"},400);	
+									});
+								}else{
+									$("#j_display_thumbnail_slider").animate({
+										left : "+=" + $("#j_display_thumbnail_hold").width() + "px"
+									},200);
+								}
+							}
+						break;
+
+						case "right":
+							$("#j_display_thumbnail_slider").animate({left : "-=20px"},100);
+							
+						break;
+					}
 				},
 
 				//When fullscreen is click, this function grabs the current image variable and sets the big screen background image to that of the current image.
