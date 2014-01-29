@@ -231,11 +231,13 @@
 						cursor : "pointer"
 					});
 
+					var window_height = $(window).height();
+
 					$("#j_display_big_screen").css({
 						backgroundColor : "black",
 						position : "fixed",
 						width : "100%",
-						height : "100%",
+						height : window_height + "px",
 						top : "0px",
 						left : "0px",
 						zIndex : "1100",
@@ -271,7 +273,7 @@
 						width : "30px",
 						opacity : ".5",
 						cursor : "pointer",
-						zIndex : "1400"
+						zIndex : "1099"
 					});
 
 					$("#j_display_thumb_right").css({
@@ -286,7 +288,7 @@
 						width : "30px",
 						opacity : ".5",
 						cursor : "pointer",
-						zIndex : "1400"
+						zIndex : "1099"
 					});
 				},
 
@@ -325,7 +327,6 @@
 						$("#j_display_thumbnail_slider").children(".j_display_thumbnail").each(function(index){
 							$(this).click(function(){
 								program.current_image = index;
-								program.scroll_to_thumb();
 								program.change_animate($(this).css('background-image'),program.settings.animation_type,index);
 							});
 						});
@@ -365,7 +366,7 @@
 
 					$("#j_display_exit_full").click(function(){
 						$(this).fadeOut("fast",function(){
-							$("#j_display_big_screen").fadeOut("fast");
+							$("#j_display_big_screen").fadeOut(program.settings.animation_speed);
 						});
 					});
 
@@ -440,6 +441,7 @@
 					$("#j_display_stage").append("<div id = 'j_display_fullscreen'>Fullscreen</div>");
 					$(this.element).append("<div id = 'j_display_big_screen'></div>");
 					$("#j_display_big_screen").append("<div id = 'j_display_exit_full'></div>");
+					$("#j_display_big_screen").append("<div id = ''>Original Image</div>");
 				},
 
 				init_controls: function(){
@@ -485,7 +487,7 @@
 							var img = this.img_array[this.current_image];
 
 							if($(img).width() > $(img).height()){
-								var b_size = "100% auto";
+								var b_size = "auto 100%";
 							}else if($(img).width() < $(img).height()){
 								var b_size = "auto 100%";
 							}else{
@@ -586,24 +588,24 @@
 					switch(context){
 						case "stage":
 							document.getElementById("j_display_stage").appendChild(temp_img);
+							//The rest of the function runs as usual we only need to 
+							if(temp_img.width > temp_img.height){
+								temp_img.style.width = "100%";
+
+								var background_position = "0px "+(parseInt(program.settings.stage_height) - temp_img.height) / 2 + "px";
+							}else if(temp_img.width < temp_img.height){
+								temp_img.style.height = "100%";
+
+								var background_position = (parseInt(program.settings.stage_width) - temp_img.width) / 2 + "px 0px";
+							}
 						break
 
 						case "fullscreen":
 							document.getElementById("j_display_big_screen").appendChild(temp_img);
+							
+							var background_position = "50%";
 						break;
 					}
-
-					//The rest of the function runs as usual we only need to 
-					if(temp_img.width > temp_img.height){
-						temp_img.style.width = "100%";
-
-						var background_position = "0px "+(parseInt(program.settings.stage_height) - temp_img.height) / 2 + "px";
-					}else if(temp_img.width < temp_img.height){
-						temp_img.style.height = "100%";
-
-						var background_position = (parseInt(program.settings.stage_width) - temp_img.width) / 2 + "px 0px";
-					}
-
 					temp_img.remove();
 					return background_position;
 				},
@@ -649,18 +651,18 @@
 							if(position >= 7){
 								$("#j_display_thumbnail_slider").stop().animate({left : "7px"},100);
 							}else{
-								$("#j_display_thumbnail_slider").animate({left : "+=20px"},100);
+								$("#j_display_thumbnail_slider").stop().animate({left : "+=20px"},100);
 							}
 						break;
 
 						case "right":
 							var position = parseInt($("#j_display_thumbnail_slider").css("left"));
-							var right_most = (((($(".j_display_thumbnail").size() - 1) * 57) - 200)* -1);
+							var right_most = (((($(".j_display_thumbnail").size() - 1) * 57) - 400)* -1);
 
 							if(position <= right_most){
 								$("#j_display_thumbnail_slider").stop().animate({left : (right_most + 7) + "px"},100);	
 							}else{
-								$("#j_display_thumbnail_slider").animate({left : "-=20px"},100);	
+								$("#j_display_thumbnail_slider").stop().animate({left : "-=20px"},100);	
 							}			
 						break;
 					}
@@ -677,7 +679,7 @@
 						backgroundPosition : program.center_img("fullscreen")
 					});
 
-					$("#j_display_big_screen").fadeIn("slow",function(){
+					$("#j_display_big_screen").fadeIn(program.settings.animation_speed,function(){
 						$("#j_display_exit_full").fadeIn("fast");
 					});
 				}
