@@ -411,9 +411,11 @@
 					});
 
 					$("#j_display_thumb_left").hover(function(){
-						program.large_thumb_scroll("left");
+						moving = setInterval(function(){
+							program.large_thumb_scroll("left");
+						},100);
 					},function(){
-						alert("working");
+						clearInterval(moving);
 					});
 
 					$("#j_display_thumb_right").hover(function(){
@@ -642,34 +644,24 @@
 				large_thumb_scroll: function(direction){
 					switch(direction){
 						case "left":
-							var pos_left = $("#j_display_thumbnail_slider").css("left");
-							
-							//If the slider is already at the beginning of the thumbnails animate a stopping type animation to indicate the beginning has been reached.
-							if(0 < parseInt(pos_left) && parseInt(pos_left) <= 7){
-								$("#j_display_thumbnail_slider").animate({left : "0px"},100,function(){
-									$("#j_display_thumbnail_slider").animate({left : "7px"},400);	
-								});
+							var position = parseInt($("#j_display_thumbnail_slider").css("left"));
+
+							if(position >= 7){
+								$("#j_display_thumbnail_slider").stop().animate({left : "7px"},100);
 							}else{
-
-								var slide_left = parseInt($("#j_display_thumbnail_slider").css("left"));
-								var distance = $("#j_display_thumbnail_hold").width();
-
-								//Check if the sliding left will go past the first thumbnail or not, if it does automatically stop at 0
-								if((slide_left - distance) < 0){
-									$("#j_display_thumbnail_slider").animate({left : "0px"},100,function(){
-										$("#j_display_thumbnail_slider").animate({left : "7px"},400);	
-									});
-								}else{
-									$("#j_display_thumbnail_slider").animate({
-										left : "+=" + $("#j_display_thumbnail_hold").width() + "px"
-									},200);
-								}
+								$("#j_display_thumbnail_slider").animate({left : "+=20px"},100);
 							}
 						break;
 
 						case "right":
-							$("#j_display_thumbnail_slider").animate({left : "-=20px"},100);
-							
+							var position = parseInt($("#j_display_thumbnail_slider").css("left"));
+							var right_most = (((($(".j_display_thumbnail").size() - 1) * 57) - 200)* -1);
+
+							if(position <= right_most){
+								$("#j_display_thumbnail_slider").stop().animate({left : (right_most + 7) + "px"},100);	
+							}else{
+								$("#j_display_thumbnail_slider").animate({left : "-=20px"},100);	
+							}			
 						break;
 					}
 				},
