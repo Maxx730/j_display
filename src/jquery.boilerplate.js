@@ -30,7 +30,7 @@
 				this.element = element;
 
 				//This code will grab the current directory and split off the end so that only the plugin directory is there.
-				var location = "http://www." + document.location.host + "/j_display/";
+				var location = document.location.origin + "/j_display/";
 				this.directory = location;
 				// jQuery has an extend method which merges the contents of two or
 				// more objects, storing the result in the first object. The first object
@@ -90,7 +90,7 @@
 
 					$("#j_display_thumbnail_hold").css({
 						position : "absolute",
-						width : "100%",
+						width : program.determine_thumb_hold(),
 						zIndex : "1000",
 						paddingRight : "10px",
 						backgroundColor : "black",
@@ -322,8 +322,10 @@
 
 				//Check how many images need to be in the thumbnail holder and check if there are that many, if there are not enough set the thumbnail hold width just to 100%.
 				determine_thumb_hold: function(){
-					if(((this.img_array.length * 57) + 7) > this.settings.stage_width){
+					if(((this.img_array.length * 57) + 7) > parseInt(this.settings.stage_width)){
+						var hold_width = ((this.img_array.length * 57) + 7) + "px";
 
+						return hold_width;
 					}else{
 						return "100%";
 					}
