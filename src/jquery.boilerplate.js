@@ -58,7 +58,7 @@
 						// you can add more functions like the one below and
 						// call them like so: this.yourOtherFunction(this.element, this.settings).
 
-						this.build_stage();
+						this.build_stage(this.settings.thumbnail_type);
 						this.init_imgs(this.settings.thumbnail_type);
 						this.init_counter();
 						this.init_title();
@@ -78,50 +78,14 @@
 							this.init_controls();
 						}
 
-						this.init_styling();
+						this.init_styling(this.settings.thumbnail_type);
 						this.init_events();
 				},
 			
 				//Handles styling for all the ui in the gallery.
-				init_styling: function(){
+				//context String (required) to save time we only style elements that are actually going be used depending on the type of gallery the user has chosen.
+				init_styling: function(context){
 					var program = this;
-
-					//Calculate how wide the thumbnail holder needs to be roughly, can be done more precisely later on.
-					var thumbnail_hold = this.img_array.length * 60 + "px";
-
-					$("#j_display_thumbnail_hold").css({
-						position : "absolute",
-						width : program.determine_thumb_hold(),
-						zIndex : "1000",
-						paddingRight : "10px",
-						backgroundColor : "black",
-						bottom : "0px",
-						height : "50px",
-						borderTop : "solid 3px " + program.settings.color_theme,
-						padding : "7px"
-					});
-
-					$(".j_display_thumbnail").css({
-						width : "50px",
-						height : "50px",
-						cursor : "pointer",
-						marginTop : "7px",
-						opacity : ".3",
-						float : "left",
-						marginLeft : "7px",
-						marginTop : "0px",
-						backgroundColor : "white"
-					});
-
-					$(".j_display_thumbnail:first-child").css({
-						marginLeft : "0px"
-					});
-
-					$("#j_display_thumbnail_slider").css({
-						position : "absolute",
-						width : "100%",
-						height : "100%"
-					})
 
 					$("#j_display_stage").css({
 						width : this.settings.stage_width,
@@ -145,57 +109,6 @@
 						backgroundRepeat : "no-repeat"
 					});
 
-					$("#j_display_counter").css({
-						backgroundColor : program.settings.color_theme,
-						padding : "7px",
-						position : "absolute",
-						zIndex : "999",
-						textAlign : "center",
-						fontFamily : "sans-serif",
-						fontSize : "12px",
-						bottom : "67px",
-						left : "7px"
-					});
-
-					$("#j_display_title").css({
-						position : "absolute",
-						backgroundColor : program.settings.color_theme,
-						right : "7px",
-						zIndex : "999",
-						bottom : "67px",
-						padding : "7px",
-						fontFamily : "sans-serif",
-						fontSize : "12px"
-					});
-
-					$("#j_display_control_left").css({
-						position : "absolute",
-						width : "30px",
-						height : "30px",
-						backgroundImage : "url("+program.directory+"img/arrow_left.png)",
-						backgroundSize : "100% 100%",
-						backgroundColor : "black",
-						opacity : ".5",
-						zIndex : "999",
-						top : "-35px",
-						left : "7px",
-						cursor : "pointer"
-					});
-
-					$("#j_display_control_right").css({
-						position : "absolute",
-						width : "30px",
-						height : "30px",
-						backgroundImage : "url("+program.directory+"img/arrow_right.png)",
-						backgroundColor : "black",
-						backgroundSize : "100% 100%",
-						opacity : ".5",
-						zIndex : "999",
-						right : "7px",
-						top : "-35px",
-						cursor : "pointer"
-					});
-
 					$("#j_display_fullscreen").css({
 						position : "absolute",
 						backgroundColor : "black",
@@ -212,29 +125,6 @@
 						backgroundRepeat : "no-repeat",
 						cursor : "pointer",
 						backgroundPosition : "8px 6px"
-					});
-
-					$(".selected_thumb").css({
-						width : "50px",
-						height : "50px",
-						cursor : "pointer",
-						marginTop : "7px",
-						opacity : "1"
-					});
-
-					$("#j_display_auto").css({
-						position : "absolute",
-						backgroundColor : "black",
-						backgroundImage : "url("+program.directory+"img/pause.png)",
-						zIndex : "999",
-						width : "30px",
-						height : "30px",
-						backgroundRepeat : "no-repeat",
-						opacity : ".5",
-						top : "7px",
-						left : "7px",
-						backgroundPosition : "7px 7px",
-						cursor : "pointer"
 					});
 
 					var window_height = $(window).height();
@@ -267,36 +157,6 @@
 						top : "7px"
 					});
 
-					$("#j_display_thumb_left").css({
-						position : "absolute",
-						left : "0px",
-						bottom : "0px",
-						backgroundColor : program.settings.color_theme,
-						backgroundImage : "url("+program.directory+"img/thumb_left.png)",
-						backgroundRepeat : "no-repeat",
-						backgroundPosition : "2px 16px",
-						height : "64px",
-						width : "30px",
-						opacity : ".5",
-						cursor : "pointer",
-						zIndex : "1099"
-					});
-
-					$("#j_display_thumb_right").css({
-						position : "absolute",
-						right : "0px",
-						bottom : "0px",
-						backgroundColor : program.settings.color_theme,
-						backgroundImage : "url("+program.directory+"img/thumb_right.png)",
-						backgroundRepeat : "no-repeat",
-						backgroundPosition : "-2px 16px",
-						height : "64px",
-						width : "30px",
-						opacity : ".5",
-						cursor : "pointer",
-						zIndex : "1099"
-					});
-
 					$("#j_display_full_url").css({
 						color : "white",
 						fontFamily : "sans-serif",
@@ -317,22 +177,183 @@
 						textDecoration : "none",
 						color : "white"
 					});
+
+					//Code above is going to be used regardless of the type of gallery the user wants, they are universally needed for the gallery.
+
+					switch(context){
+						case "image":
+							//Calculate how wide the thumbnail holder needs to be roughly, can be done more precisely later on.
+							var thumbnail_hold = this.img_array.length * 60 + "px";
+
+							$("#j_display_thumbnail_hold").css({
+								position : "absolute",
+								width : program.determine_thumb_hold(),
+								zIndex : "1000",
+								paddingRight : "10px",
+								backgroundColor : "black",
+								bottom : "0px",
+								height : "50px",
+								borderTop : "solid 3px " + program.settings.color_theme,
+								padding : "7px"
+							});
+
+							$(".j_display_thumbnail").css({
+								width : "50px",
+								height : "50px",
+								cursor : "pointer",
+								marginTop : "7px",
+								opacity : ".3",
+								float : "left",
+								marginLeft : "7px",
+								marginTop : "0px",
+								backgroundColor : "white"
+							});
+
+							$(".j_display_thumbnail:first-child").css({
+								marginLeft : "0px"
+							});
+
+							$("#j_display_thumbnail_slider").css({
+								position : "absolute",
+								width : "100%",
+								height : "100%"
+							});
+
+							$("#j_display_counter").css({
+								backgroundColor : program.settings.color_theme,
+								padding : "7px",
+								position : "absolute",
+								zIndex : "999",
+								textAlign : "center",
+								fontFamily : "sans-serif",
+								fontSize : "12px",
+								bottom : "67px",
+								left : "7px"
+							});
+
+							$("#j_display_title").css({
+								position : "absolute",
+								backgroundColor : program.settings.color_theme,
+								right : "7px",
+								zIndex : "999",
+								bottom : "67px",
+								padding : "7px",
+								fontFamily : "sans-serif",
+								fontSize : "12px"
+							});
+
+							$("#j_display_thumb_left").css({
+								position : "absolute",
+								left : "0px",
+								bottom : "0px",
+								backgroundColor : program.settings.color_theme,
+								backgroundImage : "url("+program.directory+"img/thumb_left.png)",
+								backgroundRepeat : "no-repeat",
+								backgroundPosition : "2px 16px",
+								height : "64px",
+								width : "30px",
+								opacity : ".5",
+								cursor : "pointer",
+								zIndex : "1099"
+							});
+
+							$("#j_display_thumb_right").css({
+								position : "absolute",
+								right : "0px",
+								bottom : "0px",
+								backgroundColor : program.settings.color_theme,
+								backgroundImage : "url("+program.directory+"img/thumb_right.png)",
+								backgroundRepeat : "no-repeat",
+								backgroundPosition : "-2px 16px",
+								height : "64px",
+								width : "30px",
+								opacity : ".5",
+								cursor : "pointer",
+								zIndex : "1099"
+							});
+						break;
+
+						case "square":
+							$("#j_display_small_thumbnails").css({
+								position : "absolute",
+								backgroundColor : "red",
+								bottom : "0px"
+							});
+
+							$(".j_display_thumb_square").css({
+								width : "10px",
+								height : "10px",
+								backgroundColor : "white",
+								float : "left",
+								marginLeft : "7px"
+							});
+						break;
+
+						case "circle":
+						break;
+					}
+
+					$("#j_display_control_left").css({
+						position : "absolute",
+						width : "30px",
+						height : "30px",
+						backgroundImage : "url("+program.directory+"img/arrow_left.png)",
+						backgroundSize : "100% 100%",
+						backgroundColor : "black",
+						opacity : ".5",
+						zIndex : "999",
+						top : "-35px",
+						left : "7px",
+						cursor : "pointer"
+					});
+
+					$("#j_display_control_right").css({
+						position : "absolute",
+						width : "30px",
+						height : "30px",
+						backgroundImage : "url("+program.directory+"img/arrow_right.png)",
+						backgroundColor : "black",
+						backgroundSize : "100% 100%",
+						opacity : ".5",
+						zIndex : "999",
+						right : "7px",
+						top : "-35px",
+						cursor : "pointer"
+					});
+
+					$("#j_display_auto").css({
+						position : "absolute",
+						backgroundColor : "black",
+						backgroundImage : "url("+program.directory+"img/pause.png)",
+						zIndex : "999",
+						width : "30px",
+						height : "30px",
+						backgroundRepeat : "no-repeat",
+						opacity : ".5",
+						top : "7px",
+						left : "7px",
+						backgroundPosition : "7px 7px",
+						cursor : "pointer"
+					});
 				},
 
 				//Builds the divs that make up the stage of the gallery.
 				//type String (required) determines different UI elements depending on what kind of thumbnails the user wants to see, if there are actual thumbnails of the images than there will be UI controls for scrolling through the images.
 				build_stage: function (type){
+					//Div that holds the actual thumbnails of the images.
+					$(this.element).append("<div id = 'j_display_stage'></div>");
+
 					switch(type){
 						case "image":
 
-						//Div that holds the actual thumbnails of the images.
-	            		$(this.element).append("<div id = 'j_display_stage'></div>");
 	            		$("#j_display_stage").append("<div id = 'j_display_fader'></div><div id = 'j_display_thumbnail_hold'><div id = 'j_display_thumbnail_slider'></div></div>");
-	            		
+
 						break;
 
 						case "square":
 						case "circle":
+
+	            		$("#j_display_stage").append("<div id = 'j_display_small_thumbnails'></div>");
 
 						break;
 					}
@@ -371,19 +392,21 @@
 								break;
 								
 								case "square":
-									$("#j_display_stage").append("<div class = 'j_display_square'>square</div>");
+									$("#j_display_small_thumbnails").append("<div class = 'j_display_thumb_square'></div>");
 								break;
 								
 								case "circle":
+									$("#j_display_small_thumbnails").append("<div class = 'j_display_thumb_circle'></div>");
 								break;
 							}
 					});
 
-					$("#j_display_stage").css({backgroundImage : "url("+$(program.img_array[0]).attr("src")+")",backgroundSize : program.scale_img($(this),"stage",0)});
+					$("#j_display_stage").css({backgroundImage : "url("+$(program.img_array[0]).attr("src")+")",backgroundSize : program.scale_img($(this),"stage",0),backgroundPosition : program.center_img()});
 				},
 
 				//Create all the event functions for different parts of the gallery ui.
-				init_events: function(){
+					//context String (required) determines what kind of events will be handled depending on the type to gallery we are creating.
+				init_events: function(context){
 					var program = this;
 
 					//Changing the background image, as of now, can only be done while auto rotate is set to false.
