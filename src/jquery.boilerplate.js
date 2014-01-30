@@ -13,7 +13,7 @@
 
 		// Create the defaults once
 		var pluginName = "j_display",
-			defaults = {	
+			defaults = {
 				"stage_width" : "400px",
 				"stage_height" : "400px",
 				"animation_speed" : 500,
@@ -21,13 +21,17 @@
 				"auto_rotate" : false,
 				"rotate_speed" : 5000,
 				"animation_type" : "fade",
-				"pause_period" : 3000
+				"pause_period" : 3000,
 
 			};
 
 		// The actual plugin constructor
 		function Plugin ( element, options ) {
 				this.element = element;
+
+				//This code will grab the current directory and split off the end so that only the plugin directory is there.
+				var location = "http://www." + document.location.host + "/j_display/";
+				this.directory = location;
 				// jQuery has an extend method which merges the contents of two or
 				// more objects, storing the result in the first object. The first object
 				// is generally empty as we don't want to alter the default options for
@@ -80,12 +84,13 @@
 				//Handles styling for all the ui in the gallery.
 				init_styling: function(){
 					var program = this;
+
 					//Calculate how wide the thumbnail holder needs to be roughly, can be done more precisely later on.
 					var thumbnail_hold = this.img_array.length * 60 + "px";
 
 					$("#j_display_thumbnail_hold").css({
 						position : "absolute",
-						width : thumbnail_hold,
+						width : "100%",
 						zIndex : "1000",
 						paddingRight : "10px",
 						backgroundColor : "black",
@@ -166,7 +171,7 @@
 						position : "absolute",
 						width : "30px",
 						height : "30px",
-						backgroundImage : "url(../img/arrow_left.png)",
+						backgroundImage : "url("+program.directory+"img/arrow_left.png)",
 						backgroundSize : "100% 100%",
 						backgroundColor : "black",
 						opacity : ".5",
@@ -180,7 +185,7 @@
 						position : "absolute",
 						width : "30px",
 						height : "30px",
-						backgroundImage : "url(../img/arrow_right.png)",
+						backgroundImage : "url("+program.directory+"img/arrow_right.png)",
 						backgroundColor : "black",
 						backgroundSize : "100% 100%",
 						opacity : ".5",
@@ -202,7 +207,7 @@
 						opacity : ".5",
 						fontFamily : "sans-serif",
 						fontSize : "12px",
-						backgroundImage : "url('../img/fullscreen.png')",
+						backgroundImage : "url('"+program.directory+"img/fullscreen.png')",
 						backgroundRepeat : "no-repeat",
 						cursor : "pointer",
 						backgroundPosition : "8px 6px"
@@ -219,7 +224,7 @@
 					$("#j_display_auto").css({
 						position : "absolute",
 						backgroundColor : "black",
-						backgroundImage : "url(../img/pause.png)",
+						backgroundImage : "url("+program.directory+"img/pause.png)",
 						zIndex : "999",
 						width : "30px",
 						height : "30px",
@@ -246,7 +251,7 @@
 					});
 
 					$("#j_display_exit_full").css({
-						backgroundImage : "url(../img/close_fullscreen.png)",
+						backgroundImage : "url("+program.directory+"img/close_fullscreen.png)",
 						width : "42px",
 						height : "42px",
 						position : "absolute",
@@ -266,7 +271,7 @@
 						left : "0px",
 						bottom : "0px",
 						backgroundColor : program.settings.color_theme,
-						backgroundImage : "url(../img/thumb_left.png)",
+						backgroundImage : "url("+program.directory+"img/thumb_left.png)",
 						backgroundRepeat : "no-repeat",
 						backgroundPosition : "2px 16px",
 						height : "64px",
@@ -281,7 +286,7 @@
 						right : "0px",
 						bottom : "0px",
 						backgroundColor : program.settings.color_theme,
-						backgroundImage : "url(../img/thumb_right.png)",
+						backgroundImage : "url("+program.directory+"img/thumb_right.png)",
 						backgroundRepeat : "no-repeat",
 						backgroundPosition : "-2px 16px",
 						height : "64px",
@@ -290,6 +295,22 @@
 						cursor : "pointer",
 						zIndex : "1099"
 					});
+
+					$("#j_display_full_url").css({
+						color : "white",
+						fontFamily : "sans-serif",
+						fontSize : "12px",
+						cursor : "pointer",
+						opacity : ".5",
+						margin : "0 auto",
+						width : "140px",
+						backgroundColor : "black",
+						textAlign : "center",
+						padding : "7px",
+						backgroundImage : "url("+program.directory+"img/link.png)",
+						backgroundRepeat : "no-repeat",
+						backgroundPosition : "0px -2px"
+					});
 				},
 
 				//Builds the divs that make up the stage of the gallery.
@@ -297,6 +318,15 @@
 					//Div that holds the actual thumbnails of the images.
             		$(this.element).append("<div id = 'j_display_stage'></div>");
             		$("#j_display_stage").append("<div id = 'j_display_fader'></div><div id = 'j_display_thumbnail_hold'><div id = 'j_display_thumbnail_slider'></div></div>");
+				},
+
+				//Check how many images need to be in the thumbnail holder and check if there are that many, if there are not enough set the thumbnail hold width just to 100%.
+				determine_thumb_hold: function(){
+					if(((this.img_array.length * 57) + 7) > this.settings.stage_width){
+
+					}else{
+						return "100%";
+					}
 				},
 
 				//Loop through the images and build the divs that will contain the thumbnails.
@@ -336,6 +366,16 @@
 						$(this).css({opacity : "1"});
 					},function(){
 						$(this).css({opacity : ".5"});
+					});
+
+					$("#j_display_full_url").hover(function(){
+						$(this).animate({
+							opacity : "1"
+						},300);
+					},function(){
+						$(this).animate({
+							opacity : ".5"
+						},300);
 					});
 
 					//controls that will slide down if the user hovers over the stage.
@@ -441,7 +481,7 @@
 					$("#j_display_stage").append("<div id = 'j_display_fullscreen'>Fullscreen</div>");
 					$(this.element).append("<div id = 'j_display_big_screen'></div>");
 					$("#j_display_big_screen").append("<div id = 'j_display_exit_full'></div>");
-					$("#j_display_big_screen").append("<div id = ''>Original Image</div>");
+					$("#j_display_big_screen").append("<div id = 'j_display_full_url'><a href = '' id = 'j_display_org_img'>Original Image</a></div>");
 				},
 
 				init_controls: function(){
@@ -672,6 +712,8 @@
 				set_fullscreen_image: function(){
 					var program = this;
 					var background_url = $(this.img_array[this.current_image]).attr("src");
+
+					$("#j_display_org_img").attr("href",background_url);
 
 					$("#j_display_big_screen").css({
 						backgroundImage : "url("+background_url+")",
