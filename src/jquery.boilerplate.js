@@ -22,7 +22,8 @@
 				"rotate_speed" : 5000,
 				"animation_type" : "fade",
 				"pause_period" : 3000,
-
+				"thumbnail_speed" : 57,
+				"thumbnail_type" : "image"
 			};
 
 		// The actual plugin constructor
@@ -58,7 +59,7 @@
 						// call them like so: this.yourOtherFunction(this.element, this.settings).
 
 						this.build_stage();
-						this.init_imgs();
+						this.init_imgs(this.settings.thumbnail_type);
 						this.init_counter();
 						this.init_title();
 						this.init_fullscreen();
@@ -158,10 +159,10 @@
 
 					$("#j_display_title").css({
 						position : "absolute",
-						backgroundColor : "white",
+						backgroundColor : program.settings.color_theme,
 						right : "7px",
 						zIndex : "999",
-						bottom : "7px",
+						bottom : "67px",
 						padding : "7px",
 						fontFamily : "sans-serif",
 						fontSize : "12px"
@@ -311,13 +312,30 @@
 						backgroundRepeat : "no-repeat",
 						backgroundPosition : "0px -2px"
 					});
+
+					$("#j_display_full_url a").css({
+						textDecoration : "none",
+						color : "white"
+					});
 				},
 
 				//Builds the divs that make up the stage of the gallery.
-				build_stage: function (){
-					//Div that holds the actual thumbnails of the images.
-            		$(this.element).append("<div id = 'j_display_stage'></div>");
-            		$("#j_display_stage").append("<div id = 'j_display_fader'></div><div id = 'j_display_thumbnail_hold'><div id = 'j_display_thumbnail_slider'></div></div>");
+				//type String (required) determines different UI elements depending on what kind of thumbnails the user wants to see, if there are actual thumbnails of the images than there will be UI controls for scrolling through the images.
+				build_stage: function (type){
+					switch(type){
+						case "image":
+
+						//Div that holds the actual thumbnails of the images.
+	            		$(this.element).append("<div id = 'j_display_stage'></div>");
+	            		$("#j_display_stage").append("<div id = 'j_display_fader'></div><div id = 'j_display_thumbnail_hold'><div id = 'j_display_thumbnail_slider'></div></div>");
+	            		
+						break;
+
+						case "square":
+						case "circle":
+
+						break;
+					}
 				},
 
 				//Check how many images need to be in the thumbnail holder and check if there are that many, if there are not enough set the thumbnail hold width just to 100%.
@@ -332,9 +350,12 @@
 				},
 
 				//Loop through the images and build the divs that will contain the thumbnails.
-				init_imgs: function(){
+					//type String (required) used to determine if the user wants to load actual image thumbnails or for less network/system intensive load only square or round dots.
+				init_imgs: function(type){
+
 					//Make sure to reference the outside object.
 					var program = this;
+
 					$(this.element).children("img").each(function(){
 						program.img_array.push($(this));
 						program.title_array.push($(this).attr("title"));
@@ -344,7 +365,18 @@
 							display : "none"
 						});
 
-						$("#j_display_thumbnail_slider").append("<div class = 'j_display_thumbnail' style = 'background-image:url("+$(this).attr("src")+");background-size:"+program.scale_img($(this),"thumbnail")+";'></div>");
+							switch(type){
+								case "image":
+									$("#j_display_thumbnail_slider").append("<div class = 'j_display_thumbnail' style = 'background-image:url("+$(this).attr("src")+");background-size:"+program.scale_img($(this),"thumbnail")+";'></div>");
+								break;
+								
+								case "square":
+									$("#j_display_stage").append("<div class = 'j_display_square'>square</div>");
+								break;
+								
+								case "circle":
+								break;
+							}
 					});
 
 					$("#j_display_stage").css({backgroundImage : "url("+$(program.img_array[0]).attr("src")+")",backgroundSize : program.scale_img($(this),"stage",0)});
@@ -654,6 +686,8 @@
 
 				//When auto is on then we need to keep track of which photo is actually focused on, if auto is not on than there will be sliding arrows for the user to find photos.
 				slide_thumbs: function(direction){
+					var program = this;
+
 					switch(direction){
 						case "left":
 							$("#j_display_thumbnail_slider").animate({
@@ -686,6 +720,8 @@
 				},
 
 				large_thumb_scroll: function(direction){
+					var program = this;
+
 					switch(direction){
 						case "left":
 							var position = parseInt($("#j_display_thumbnail_slider").css("left"));
@@ -693,7 +729,7 @@
 							if(position >= 7){
 								$("#j_display_thumbnail_slider").stop().animate({left : "7px"},100);
 							}else{
-								$("#j_display_thumbnail_slider").stop().animate({left : "+=20px"},100);
+								$("#j_display_thumbnail_slider").stop().animate({left : "+="+program.settings.thumbnail_speed+"px"},100);
 							}
 						break;
 
@@ -704,7 +740,7 @@
 							if(position <= right_most){
 								$("#j_display_thumbnail_slider").stop().animate({left : (right_most + 7) + "px"},100);	
 							}else{
-								$("#j_display_thumbnail_slider").stop().animate({left : "-=20px"},100);	
+								$("#j_display_thumbnail_slider").stop().animate({left : "-="+program.settings.thumbnail_speed+"px"},100);	
 							}			
 						break;
 					}
