@@ -79,7 +79,7 @@
 						}
 
 						this.init_styling(this.settings.thumbnail_type);
-						this.init_events();
+						this.init_events(this.settings.thumbnail_type);
 				},
 			
 				//Handles styling for all the ui in the gallery.
@@ -276,8 +276,12 @@
 						case "square":
 							$("#j_display_small_thumbnails").css({
 								position : "absolute",
-								backgroundColor : "red",
-								bottom : "0px"
+								backgroundColor : "black",
+								bottom : "0px",
+								padding : "7px",
+								cursor : "pointer",
+								width : "100%",
+								borderTop : "solid 3px white"
 							});
 
 							$(".j_display_thumb_square").css({
@@ -286,6 +290,53 @@
 								backgroundColor : "white",
 								float : "left",
 								marginLeft : "7px"
+							});
+
+							$(".j_display_thumb_square:first-child").css({
+								marginLeft : "0px"
+							});
+
+							$("#j_display_counter").css({
+								backgroundColor : program.settings.color_theme,
+								padding : "7px",
+								position : "absolute",
+								zIndex : "999",
+								textAlign : "center",
+								fontFamily : "sans-serif",
+								fontSize : "12px",
+								bottom : "25px",
+								left : "7px"
+							});
+
+							$("#j_display_title").css({
+								position : "absolute",
+								backgroundColor : program.settings.color_theme,
+								right : "7px",
+								zIndex : "999",
+								bottom : "25px",
+								padding : "7px",
+								fontFamily : "sans-serif",
+								fontSize : "12px"
+							});
+
+							$(".j_display_thumb_square").eq(0).css({
+								backgroundColor : "red"
+							});
+
+							$(".j_display_thumb_preview").each(function(index){
+								$(this).css({
+									left : index * 25 + "px"
+								});
+							});
+
+							$(".j_display_thumb_preview").css({
+								position : "absolute",
+								backgroundColor : "black",
+								width : "100px",
+								height : "25px",
+								opacity : ".7",
+								color : "white",
+								display : "none"
 							});
 						break;
 
@@ -353,7 +404,7 @@
 						case "square":
 						case "circle":
 
-	            		$("#j_display_stage").append("<div id = 'j_display_small_thumbnails'></div>");
+	            		$("#j_display_stage").append("<div id = 'j_display_fader'></div><div id = 'j_display_small_thumbnails'></div>");
 
 						break;
 					}
@@ -377,7 +428,7 @@
 					//Make sure to reference the outside object.
 					var program = this;
 
-					$(this.element).children("img").each(function(){
+					$(this.element).children("img").each(function(index){
 						program.img_array.push($(this));
 						program.title_array.push($(this).attr("title"));
 
@@ -392,7 +443,7 @@
 								break;
 								
 								case "square":
-									$("#j_display_small_thumbnails").append("<div class = 'j_display_thumb_square'></div>");
+									$("#j_display_small_thumbnails").append("<div class = 'j_display_thumb_preview'>" + $(program.img_array[index]).attr("src") + "</div><div class = 'j_display_thumb_square'></div>");
 								break;
 								
 								case "circle":
@@ -408,32 +459,6 @@
 					//context String (required) determines what kind of events will be handled depending on the type to gallery we are creating.
 				init_events: function(context){
 					var program = this;
-
-					//Changing the background image, as of now, can only be done while auto rotate is set to false.
-					if(program.settings.auto_rotate == false){
-						$("#j_display_thumbnail_slider").children(".j_display_thumbnail").each(function(index){
-							$(this).click(function(){
-								program.current_image = index;
-								program.change_animate($(this).css('background-image'),program.settings.animation_type,index);
-							});
-						});
-					}
-
-					$(".j_display_thumbnail").hover(function(){
-						$(this).css({opacity : "1"});
-					},function(){
-						$(this).css({opacity : ".5"});
-					});
-
-					$("#j_display_full_url").hover(function(){
-						$(this).animate({
-							opacity : "1"
-						},300);
-					},function(){
-						$(this).animate({
-							opacity : ".5"
-						},300);
-					});
 
 					//controls that will slide down if the user hovers over the stage.
 					$("#j_display_stage").hover(function(){
@@ -472,6 +497,71 @@
 					},function(){
 						$(this).animate({opacity : ".5"},300);
 					});
+
+					//above is universally used code for events that will always be part of the gallery regardless of the type of gallery the user requests in the settings.
+
+					switch(context){
+						case "image":
+
+						break;
+
+						case "square":
+							$(".j_display_thumb_square").hover(function(){
+								$(this).css({
+									backgroundColor : "red"
+								});
+							},function(){
+								$(this).css({
+									backgroundColor : "white"
+								});
+							});
+
+							$(".j_display_thumb_square").each(function(index){
+								$(this).click(function(){
+									$(".j_display_thumb_square").css({
+										backgroundColor : "white"
+									});
+
+									$(this).css({
+										backgroundColor : "red"
+									});
+
+									program.current_image = index;
+
+									var new_url = "url(" + $(program.img_array[index]).attr("src") + ")";
+
+									program.change_animate(new_url,program.settings.animation_type,index);
+								});
+							});
+						break;
+					}
+
+					//Changing the background image, as of now, can only be done while auto rotate is set to false.
+					if(program.settings.auto_rotate == false){
+						$("#j_display_thumbnail_slider").children(".j_display_thumbnail").each(function(index){
+							$(this).click(function(){
+								program.current_image = index;
+								program.change_animate($(this).css('background-image'),program.settings.animation_type,index);
+							});
+						});
+					}
+
+					$(".j_display_thumbnail").hover(function(){
+						$(this).css({opacity : "1"});
+					},function(){
+						$(this).css({opacity : ".5"});
+					});
+
+					$("#j_display_full_url").hover(function(){
+						$(this).animate({
+							opacity : "1"
+						},300);
+					},function(){
+						$(this).animate({
+							opacity : ".5"
+						},300);
+					});
+
 
 					$("#j_display_auto").hover(function(){
 						$(this).animate({
